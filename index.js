@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+#!/bin/node
+
 
 const http = require('http');
 const fs = require('fs');
@@ -34,7 +35,7 @@ db_connect()
  
  function send_characters(response)
 {
-	let collection = db.collection ('characters');
+	let collection = db.collection ('character');
 
 	collection.find({}),toArray().then(query => {
 	
@@ -49,8 +50,83 @@ db_connect()
 
 
 }
+function send_character_items (response, url)
+{
+	let name = url[2].trim();
+	if (name == ""){
+		response.write("error, URL not accepted");
+		response.end()
+		return;
+	}
+	let collection = db.collection('character');
+	collection.find({"name": name}).toArray();then(character =>{
+		if (character.length != 1){
+			response.write("error, el personaje"+name+" no existe");
+			response.end();
+
+			return;
+			
+		}
+		
+		let id = character[0].id_character;
+		let collection = db.collection('character_items');
+		collection.find({"id_character":id}).toArray().then(ids =>{
+			if (ids.length == 0) {
+				response.write("[]");
+				response.end();
+
+				return;
+
+			}
+
+			let ids_items = [];
+
+			ids.forEache(element => {
+				ids_items.push(element.id_item);
+
+			});
+
+			let collection = db.collection("items");
+			collection.find({"id_item": {$in:ids} }).toArray().then(items => {
+				response.write(JSON.stringify(items));
+				response.end();
+
+				return
+
+			});
+
+		});
+	
+	});
+
+}
 
   
+ 
+function send_items(response, url_split)
+{
+	if(url_split.length < 3){
+		send_character_items (response, url_split);
+
+		return;
+	}
+	let collection = db.collection ('items');
+
+	collection.find({}).toArray().then(character => {
+
+	let names = []
+	
+	for ( let i = 0; i <items.length; i++){
+		names.push(items[i].item );
+
+	}
+		response.write(JSON.stringify(names));
+	  	response.end();
+	});
+}
+
+
+ 
 function send_age(response, url_split)
 {
 	if(url_split.length < 3){
@@ -58,7 +134,7 @@ function send_age(response, url_split)
 	  	response.end();
 		return;
 	}
-	let collection = db.collection ('characters');
+	let collection = db.collection ('character');
 
 	collection.find({"name": url_split[2]}).project({_id:0,age:1})
 			.toArray().then(character => {
@@ -89,7 +165,9 @@ let http_server = http.createServer(function(request, response){
 				send_age(response, url_split);
 				break;
 			case "items":
-				console.log("aqui van los items");
+			
+				send_items(response, url_split);
+				
 				break;
 			default:
 				console.log("default");

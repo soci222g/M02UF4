@@ -10,8 +10,8 @@
 <nav>
 <form>
 <ul>
-<li><button id="personajes-button" onclick="getCharacter()">Personajes</button></li>
-<li><button id="items-button">Objetos</button></li>
+<li><button id="personajes-button" onclick="getCharacter(); return false;">Personajes</button></li>
+<li><button id="items-button" onclick="getitems(); return false;">Objetos</button></li>
 <li><button id="weapons-button">Armas</button></li>
 </ul>
 </form>
@@ -34,15 +34,32 @@ document.getElementById("footer-year").innerHTML = new Date().getFullYear();
 
 function getCharacter()
 	{
-		fetch("http://10.40.2.114:6969/characters")
+		fetch("/character")
 			.then(response => response.json())
-			.then(characters => {
+			.then(character => {
 
 
 		let list = "<ul>";
-		for (let i = 0; i < characters.length; i++)
+		for (let i = 0; i < character.length; i++)
 		{
-			list += "<li>"+charactrs[i]+"</li>";
+			list += "<li>"+character[i]+"</li>";
+		}
+		list += "</ul>"
+		document.getElementById("container").innerHTML = list;
+		});
+	}	
+
+function getitems()
+	{
+		fetch("/items")
+			.then(response => response.json())
+			.then(items => {
+
+
+		let list = "<ul>";
+		for (let i = 0; i < items.length; i++)
+		{
+			list += "<li>"+items[i]+"</li>";
 		}
 		list += "</ul>"
 		document.getElementById("container").innerHTML = list;
