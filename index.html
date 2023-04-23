@@ -14,6 +14,12 @@
 <li><button id="items-button" onclick="getitems(); return false;">Objetos</button></li>
 <li><button id="weapons-button">Armas</button></li>
 </ul>
+<ul>
+<li><button id="character-yuca" onclick="getCharacterID('2'); return false;">Yuca</button></li>
+<li><button id="character-yulen" onclick="getCharacterID('3'); return false;">Yulen</button></li>
+<li><button id="character-Josema" onclick="getCharacterID('4'); return false;">Josema</button></li>
+<li><button id="character-Payoh" onclick="getCharacterID('1'); return false;">Payoh</button></li>
+</ul>
 </form>
 </nav>
 </header>
@@ -29,12 +35,13 @@
 
 <footer>
 <p> Jordi Gratacos (c) <span id="footer-year">2022</span></p>
+</footer>
 <script>
 document.getElementById("footer-year").innerHTML = new Date().getFullYear();
 
 function getCharacter()
 	{
-		fetch("/character")
+		fetch("/characters")
 			.then(response => response.json())
 			.then(character => {
 
@@ -47,8 +54,31 @@ function getCharacter()
 		list += "</ul>"
 		document.getElementById("container").innerHTML = list;
 		});
-	}	
+	}
+function getCharacterID(id_character) {
 
+				let url = "http://192.168.1.135:8080/?id_character=" + id_character;
+
+				fetch(url)
+					.then(response => response.json())
+					.then(data => {
+						console.log(data);
+						let list = "<ul>";
+
+						list += "<li>Name: " + data[0].name + "</li>";
+						list += "<li>Age: " + data[0].age + "</li>";
+						list += "<li>Race: " + data[0].race + "</li>";
+						list += "<li>Class: " + data[0].class + "</li>";
+						list += "<li>Gender: " + data[0].gender + "</li>";
+						list += "<li>Height: " + data[0].height + "</li>";
+						list += "<li>Weight: " + data[0].weight + "</li>";
+						list += "<li>Origin: " + data[0].origin + "</li>";
+
+						list += "</ul>";
+
+						document.getElementById("container").innerHTML = list;
+					});
+			}
 function getitems()
 	{
 		fetch("/items")

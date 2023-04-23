@@ -1,54 +1,49 @@
-#!/bin/node
-
-
+#!/usr/bin/node
 const http = require('http');
-const fs = require('fs');
-
-
 const { MongoClient } = require('mongodb');
-// or as an es module:
-// import { MongoClient } from 'mongodb'
-
-// Connection URL
-const url = 'mongodb://localhost:27017';
+const fs = require('fs');
+const qs = require('querystring');
+//conection url 
+const url = 'mongodb://127.0.0.1:27017';
 const client = new MongoClient(url);
 
-// Database Name
+//database name
 const dbName = 'enbuscadeabascal';
 
+let db;
+let collection;
 async function db_connect() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log('Connected successfully to server');
-  const db = client.db(dbName);
-  const collection = db.collection('documents');
+	//use conection method to conect to the server
+	await client.connect();
+	console.log('Connected successfully to sever');
+	db = client.db(dbName);
+	//const collection = db.collection('characters');
 
-  // the following code examples can be pasted here...
+	//the following code examples can be paste here...
 
-  return 'conectados a la base de datos';
+
+
+	return 'Conectandonos a la base de datos de mongoDB ';
 }
 
 db_connect()
-  .then(info => conosle.log(info))
-  .catch(msg => console.error(msg));
+	.then(info => console.log(info))
+	.catch(msg => console.error(msg));
 
- 
- function send_characters(response)
-{
-	let collection = db.collection ('character');
-
-	collection.find({}),toArray().then(query => {
+function send_characters (response){
+	collection = db.collection('characters');
 	
-	let nombres = [];
+	collection.find({}).toArray()
+	.then(characters =>{ 
+		let names = [];
+		
+		for (let i = 0; i < characters.length; i++){
+			names.push(characters[i].name);
+		}
 
-	for(let i = 0; i < query.length; i++){
-		nombres.push( query[i].name );
-	}
-	response.write(JSON.stringify(nombres));
-  	response.end();
+		response.write(JSON.stringify(names));
+		response.end();
 	});
-
-
 }
 function send_character_items (response, url)
 {
@@ -69,7 +64,7 @@ function send_character_items (response, url)
 		}
 		
 		let id = character[0].id_character;
-		let collection = db.collection('character_items');
+		 collection = db.collection('character_items');
 		collection.find({"id_character":id}).toArray().then(ids =>{
 			if (ids.length == 0) {
 				response.write("[]");
@@ -86,7 +81,7 @@ function send_character_items (response, url)
 
 			});
 
-			let collection = db.collection("items");
+			 collection = db.collection("items");
 			collection.find({"id_item": {$in:ids} }).toArray().then(items => {
 				response.write(JSON.stringify(items));
 				response.end();
@@ -110,7 +105,7 @@ function send_items(response, url_split)
 
 		return;
 	}
-	let collection = db.collection ('items');
+	 collection = db.collection ('items');
 
 	collection.find({}).toArray().then(character => {
 
@@ -134,7 +129,7 @@ function send_age(response, url_split)
 	  	response.end();
 		return;
 	}
-	let collection = db.collection ('character');
+	collection = db.collection ('character');
 
 	collection.find({"name": url_split[2]}).project({_id:0,age:1})
 			.toArray().then(character => {
@@ -146,6 +141,17 @@ function send_age(response, url_split)
 		response.write(JSON.stringify(character[0]));
 	  	response.end();
 	});
+}
+
+function sendCharacterInfo(response, id_character) {
+
+	collection = db.collection('characters');
+	
+	collection.find({ "id_character": Number(id_character) }).project({ _id: 0 }).toArray()
+		.then(character => {
+			response.write(JSON.stringify(character));
+			response.end();
+		});	
 }
 
 let http_server = http.createServer(function(request, response){
@@ -187,6 +193,6 @@ let http_server = http.createServer(function(request, response){
 		}
 });
 
-http_server.listen(6969);
+http_server.listen(8080);
 
 
