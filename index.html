@@ -57,22 +57,21 @@ function getCharacter()
 	}
 function getCharacterID(id_character) {
 
-				let url = "http://192.168.1.135:8080/?id_character=" + id_character;
-
+	let url = "http://192.168.1.135:8080/?id_character=" + id_character;
 				fetch(url)
 					.then(response => response.json())
-					.then(data => {
-						console.log(data);
+					.then(character => {
+						console.log(character);
 						let list = "<ul>";
 
-						list += "<li>Name: " + data[0].name + "</li>";
-						list += "<li>Age: " + data[0].age + "</li>";
-						list += "<li>Race: " + data[0].race + "</li>";
-						list += "<li>Class: " + data[0].class + "</li>";
-						list += "<li>Gender: " + data[0].gender + "</li>";
-						list += "<li>Height: " + data[0].height + "</li>";
-						list += "<li>Weight: " + data[0].weight + "</li>";
-						list += "<li>Origin: " + data[0].origin + "</li>";
+						list += "<li>Name: " + character[0].name + "</li>";
+						list += "<li>Age: " + character[0].age + "</li>";
+						list += "<li>Race: " + character[0].race + "</li>";
+						list += "<li>Class: " + character[0].class + "</li>";
+						list += "<li>Gender: " + character[0].gender + "</li>";
+						list += "<li>Height: " + character[0].height + "</li>";
+						list += "<li>Weight: " + character[0].weight + "</li>";
+						list += "<li>Origin: " + character[0].origin + "</li>";
 
 						list += "</ul>";
 

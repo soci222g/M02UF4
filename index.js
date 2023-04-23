@@ -160,6 +160,7 @@ let http_server = http.createServer(function(request, response){
 	}
 
 	let url_split = request.url.split("/");
+	let Second_split = request.url.split("?")
 	console.log(url_split);
 
 	switch (url_split[1]){
@@ -177,6 +178,14 @@ let http_server = http.createServer(function(request, response){
 				break;
 			default:
 				console.log("default");
+				
+				if(Second_split[1]){
+					let new_split = Second_split[1].split("=");
+					let id_character = new_split[1];
+
+					sendCharacterInfo(response, id_character);
+					return;
+				}
 				fs.readFile("index.html", function(err, data){
 					if(err){
 						console.log(err);
